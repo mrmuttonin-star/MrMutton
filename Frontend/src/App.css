@@ -1,0 +1,8 @@
+/* Global app-level styles.
+   Tailwind handles most layout/spacing, so we intentionally keep this file minimal. */
+
+html,
+body,
+#root {
+  height: 100%;
+}

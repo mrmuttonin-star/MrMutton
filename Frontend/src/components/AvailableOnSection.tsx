@@ -9,7 +9,7 @@ const platforms = [
     logo: swiggyLogo,
     color: "hsl(25, 100%, 50%)",
     bg: "hsl(25, 100%, 97%)",
-    link:"https://www.swiggy.com/",
+    link:"https://www.swiggy.com/direct/brand/763401?source=swiggy-direct&subSource=instagram",
   },
   {
     name: "Zomato",

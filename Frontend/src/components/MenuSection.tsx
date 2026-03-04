@@ -191,7 +191,7 @@ const handleCategoryScroll = () => {
 
       {/* Cart Bar for Home Page */}
       {getTotalItems() > 0 && (
-        <ViewCartBar onViewCart={() => setIsCartOpen(true)} />
+        <ViewCartBar />
       )}
 
       {/* Cart Drawer */}

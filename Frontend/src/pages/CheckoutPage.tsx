@@ -209,7 +209,7 @@ ${orderData.items
     const token = localStorage.getItem("auth_token");
 
     if (formData.paymentMethod === "Cash on Delivery") {
-      const res = await fetch("http://localhost:8080/api/orders", {
+      const res = await fetch("https://mrmutton.onrender.com/api/orders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -236,7 +236,7 @@ ${orderData.items
 
       // 1️⃣ Create Razorpay Order
       const res = await fetch(
-        "http://localhost:8080/api/create-razorpay-order",
+        "https://mrmutton.onrender.com/api/create-razorpay-order",
         {
           method: "POST",
           headers: {
@@ -283,7 +283,7 @@ ${orderData.items
           const token = localStorage.getItem("auth_token");
 
           const verifyRes = await fetch(
-            "http://localhost:8080/api/verify-payment",
+            "https://mrmutton.onrender.com/api/verify-payment",
             {
               method: "POST",
               headers: {

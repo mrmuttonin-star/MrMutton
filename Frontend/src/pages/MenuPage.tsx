@@ -192,7 +192,7 @@ const MenuPage = () => {
 
       {/* View Cart Bar */}
       {getTotalItems() > 0 && (
-        <ViewCartBar onViewCart={() => navigate('/cart')} />
+        <ViewCartBar />
       )}
 
       {/* Floating Menu Button */}

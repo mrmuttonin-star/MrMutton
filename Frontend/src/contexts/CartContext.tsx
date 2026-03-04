@@ -7,7 +7,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export interface CartItem {
   id: string;
-  item_id: string;
+  // item_id: string;
   name: string;
   pieces: string;
   price: number;
@@ -122,11 +122,11 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Instead of fetchCart, update locally
     setItems(prev => {
-      const existing = prev.find(i => i.item_id === item.id);
+      const existing = prev.find(i => i.id === item.id);
 
       if (existing) {
         return prev.map(i =>
-          i.item_id === item.id
+          i.id === item.id
             ? { ...i, quantity: i.quantity + 1 }
             : i
         );
@@ -153,7 +153,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      setItems((prev) => prev.filter((i) => i.item_id !== id));
+      setItems((prev) => prev.filter((i) => i.id !== id));
     } catch (error) {
       console.error("Delete error:", error);
     }
@@ -172,7 +172,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         },
       });
 
-      setItems(prev => prev.filter(item => item.item_id !== id));
+      setItems(prev => prev.filter(item => item.id !== id));
       return;
     }
 
@@ -189,7 +189,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     // ✅ Update locally (NO fetchCart here)
     setItems(prev =>
       prev.map(item =>
-        item.item_id === id ? { ...item, quantity } : item
+        item.id === id ? { ...item, quantity } : item
       )
     );
 

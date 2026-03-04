@@ -141,7 +141,7 @@ const ProductsPage = () => {
 
       {/* Cart Bar */}
       {getTotalItems() > 0 && (
-        <ViewCartBar onViewCart={() => setIsCartOpen(true)} />
+        <ViewCartBar />
       )}
 
       {/* Cart Drawer */}

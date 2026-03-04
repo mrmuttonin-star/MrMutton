@@ -21,15 +21,17 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
-app.use(cors({
-  origin: [
-    "http://localhost:8081",
-    "http://localhost:5173",   // agar Vite default use karti ho
-    "https://mrmutton.com"
-  ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: [
+//     // "http://localhost:8081",
+//     // "http://localhost:5173",   // agar Vite default use karti ho
+//     // "https://mrmutton.com"
+//     "https://mr-mutton.vercel.app"
+//   ],
+//   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+//   credentials: true
+// }));
+app.use(cors());
 app.use(express.json());
 
 // Database Connection

@@ -32,7 +32,7 @@ const razorpay = new Razorpay({
 //   credentials: true
 // }));
 app.use(cors());
-app.options("*", cors());
+app.options("/*", cors());
 app.use(express.json());
 
 // Database Connection

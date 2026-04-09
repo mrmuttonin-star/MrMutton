@@ -274,7 +274,7 @@ const CheckoutPage = () => {
     if (formData.paymentMethod === "Cash on Delivery") {
       // 🔴 STEP 1: ₹100 token ke liye Razorpay order banao
       const res = await fetch(
-        "http://localhost:8080/api/create-razorpay-order",
+        "https://backend.mrmutton.com/api/create-razorpay-order",
         {
           method: "POST",
           headers: {
@@ -298,7 +298,7 @@ const CheckoutPage = () => {
         handler: async function (response) {
           // 🔴 STEP 3: Payment verify + order create
           const verifyRes = await fetch(
-            "http://localhost:8080/api/verify-payment",
+            "https://backend.mrmutton.com/api/verify-payment",
             {
               method: "POST",
               headers: {
@@ -335,7 +335,7 @@ const CheckoutPage = () => {
 
       // 1️⃣ Create Razorpay Order
       const res = await fetch(
-        "http://localhost:8080/api/create-razorpay-order",
+        "https://backend.mrmutton.com/api/create-razorpay-order",
         {
           method: "POST",
           headers: {
@@ -382,7 +382,7 @@ const CheckoutPage = () => {
           const token = localStorage.getItem("auth_token");
 
           const verifyRes = await fetch(
-            "http://localhost:8080/api/verify-payment",
+            "https://backend.mrmutton.com/api/verify-payment",
             {
               method: "POST",
               headers: {

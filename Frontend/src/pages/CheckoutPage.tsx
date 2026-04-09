@@ -289,7 +289,7 @@ const CheckoutPage = () => {
 
       // 🔴 STEP 2: Razorpay open karo
       const options = {
-        key: "rzp_test_SLZq7K2gLhLi9f",
+        key: "rzp_live_SLZT8SfQmhp7FI",
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Eatora Foods LLP",
@@ -351,7 +351,7 @@ const CheckoutPage = () => {
       console.log("Order ID:", razorpayOrder.id);
 
       const options = {
-        key: "rzp_test_SLZq7K2gLhLi9f", // your key
+        key: "rzp_live_SLZT8SfQmhp7FI", // your key
         amount: razorpayOrder.amount,
         currency: "INR",
         name: "Eatora Foods LLP",

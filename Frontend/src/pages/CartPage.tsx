@@ -32,7 +32,8 @@ const DELIVERY_CENTER = {
 };
 
 const DELIVERY_RADIUS_KM = 15;
-const DELIVERY_CHARGE_PER_KM = 7;
+const DELIVERY_CHARGE_PER_KM = 10;
+const GST_PERCENT = 5;
 
 type NominatimSuggestion = {
   place_id: number;
@@ -406,8 +407,9 @@ const CartPage = () => {
     const totalSavings = getTotalSavings();
     const subtotal = getTotalPrice();
     const delivery = deliveryCharge;
-    const totalPrice = subtotal + delivery;
     const totalItems = getTotalItems();
+    const gstAmount = (subtotal * GST_PERCENT) / 100;
+    const grandTotal = subtotal + gstAmount + deliveryCharge;
 
     let message = ``;
     message += `*MR. MUTTON*\n`;
@@ -434,7 +436,8 @@ const CartPage = () => {
     if (deliveryDetails.latitude != null && deliveryDetails.longitude != null) {
       message += `Delivery Charge: Rs ${delivery} (Rs ${DELIVERY_CHARGE_PER_KM}/km)\n`;
     }
-    message += `*TOTAL: Rs ${totalPrice}*\n`;
+    message += `GST (5%): Rs ${gstAmount}\n`;
+    message += `*TOTAL: Rs ${grandTotal}*\n`;
     message += `\n─────────────────\n`;
     message += `\n`;
     message += `*DELIVERY DETAILS*\n`;
@@ -501,7 +504,8 @@ const CartPage = () => {
   }, [distanceKm]);
 
   const subtotal = getTotalPrice();
-  const grandTotal = subtotal + deliveryCharge;
+  const gstAmount = (subtotal * GST_PERCENT) / 100;
+  const grandTotal = subtotal + gstAmount + deliveryCharge;
 
   const handleCheckout = () => {
     if (items.length === 0) {
@@ -1063,6 +1067,19 @@ const CartPage = () => {
                 <span className="text-[10px] sm:text-xs text-muted-foreground">
                   →
                 </span>
+                {/* GST */}
+                <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  + GST (5%)
+                </span>
+                <span className="text-xs sm:text-sm font-semibold">
+                  ₹{gstAmount.toFixed(2)}
+                </span>
+
+                {/* Arrow */}
+                <span className="text-[10px] sm:text-xs text-muted-foreground">
+                  →
+                </span>
+
                 <span className="text-[10px] sm:text-xs text-muted-foreground">
                   Total
                 </span>

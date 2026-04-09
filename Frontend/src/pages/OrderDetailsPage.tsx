@@ -75,6 +75,9 @@ const OrderDetailsPage = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const GST_PERCENT = 5;
+  const gstAmount = (order?.subtotal || 0) * GST_PERCENT / 100;
+
   useEffect(() => {
     if (!token) return;
 
@@ -231,47 +234,53 @@ const OrderDetailsPage = () => {
             )}
           </div>
         </div>
-            {/* Delivery Details Card */}
-<div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 space-y-2">
-  <h2 className="font-semibold text-sm text-foreground">Delivery Details</h2>
+        {/* Delivery Details Card */}
+        <div className="bg-card rounded-xl border border-border/50 shadow-sm p-4 space-y-2">
+          <h2 className="font-semibold text-sm text-foreground">
+            Delivery Details
+          </h2>
 
-  <p className="text-sm text-muted-foreground">
-    <strong>Name:</strong> {order.name}
-  </p>
+          <p className="text-sm text-muted-foreground">
+            <strong>Name:</strong> {order.name}
+          </p>
 
-  <p className="text-sm text-muted-foreground">
-    <strong>Phone:</strong> {order.phone}
-  </p>
+          <p className="text-sm text-muted-foreground">
+            <strong>Phone:</strong> {order.phone}
+          </p>
 
-  <p className="text-sm text-muted-foreground">
-    <strong>Address:</strong> {order.address}, {order.city} - {order.pincode}
-  </p>
+          <p className="text-sm text-muted-foreground">
+            <strong>Address:</strong> {order.address}, {order.city} -{" "}
+            {order.pincode}
+          </p>
 
-  {order.instructions && (
-    <p className="text-sm text-muted-foreground">
-      <strong>Instructions:</strong> {order.instructions}
-    </p>
-  )}
-</div>
+          {order.instructions && (
+            <p className="text-sm text-muted-foreground">
+              <strong>Instructions:</strong> {order.instructions}
+            </p>
+          )}
+        </div>
         {/* Bill Summary */}
-<div className="bg-card rounded-xl border border-border/50 shadow-sm px-4 py-4 space-y-2">
+        <div className="bg-card rounded-xl border border-border/50 shadow-sm px-4 py-4 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span>Subtotal</span>
+            <span>₹{order?.subtotal}</span>
+          </div>
 
-  <div className="flex justify-between text-sm">
-    <span>Subtotal</span>
-    <span>₹{order.subtotal}</span>
-  </div>
+          <div className="flex justify-between text-sm">
+            <span>Delivery Charge</span>
+            <span>₹{order.delivery_charge}</span>
+          </div>
 
-  <div className="flex justify-between text-sm">
-    <span>Delivery Charge</span>
-    <span>₹{order.delivery_charge}</span>
-  </div>
+          <div className="flex justify-between text-sm">
+            <span>GST (5%)</span>
+            <span>₹{gstAmount.toFixed(2)}</span>
+          </div>
 
-  <div className="flex justify-between text-lg font-bold border-t pt-2">
-    <span>Total</span>
-    <span className="text-primary">₹{order.total_amount}</span>
-  </div>
-
-</div>
+          <div className="flex justify-between text-lg font-bold border-t pt-2">
+            <span>Total</span>
+            <span className="text-primary">₹{order.total_amount}</span>
+          </div>
+        </div>
       </div>
     </div>
   );

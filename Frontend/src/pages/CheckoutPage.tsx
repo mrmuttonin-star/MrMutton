@@ -93,7 +93,7 @@
 
 // export default CheckoutPage;
 
-import React,{ useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -140,9 +140,13 @@ const CheckoutPage = () => {
     paymentMethod: "",
   });
 
+  const GST_PERCENT = 5;
+  const COD_TOKEN = 100;
   const subtotal = state?.subtotal ?? 0;
   const deliveryCharge = state?.deliveryCharge ?? 0;
-  const totalAmount = state?.totalAmount ?? 0;
+  const gstAmount = (subtotal * GST_PERCENT) / 100;
+  const totalAmountWithGST = subtotal + gstAmount + deliveryCharge;
+  const totalAmount = Math.round(totalAmountWithGST);
   const deliveryDate = state?.deliveryDate ?? "";
   const mealType = state?.mealType ?? "";
   const timeSlot = state?.timeSlot ?? "";
@@ -154,35 +158,94 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  //   const sendOrderToWhatsApp = (orderData: any) => {
+  //     const businessNumber = "919220829266"; // 👈 apna WhatsApp number daalo
+
+  //     const message = `
+  // 🛒 *New Order Received*
+
+  // 👤 Name: ${orderData.name}
+  // 📞 Phone: ${orderData.phone}
+  // 📍 Address: ${orderData.address}, ${orderData.city} - ${orderData.pincode}
+
+  // 📅 Delivery Date: ${orderData.deliveryDate}
+  // 🍱 Meal Type: ${orderData.mealType}
+  // ⏰ Time Slot: ${orderData.timeSlot}
+
+  // 💳 Payment: ${orderData.paymentMethod}
+  // 💰 Total: ₹${orderData.totalAmount}
+
+  // 📦 Items:
+  // ${orderData.items
+  //   .map(
+  //     (item: any) =>
+  //       `• ${item.name} x ${item.quantity} = ₹${item.price * item.quantity}`,
+  //   )
+  //   .join("\n")}
+  // `;
+
+  //     const url = `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+
+  //     window.location.href = url;
+  //   };
+
   const sendOrderToWhatsApp = (orderData: any) => {
-    const businessNumber = "919220829266"; // 👈 apna WhatsApp number daalo
+    const businessNumber = "919220829266";
 
-    const message = `
-🛒 *New Order Received*
+    const GST_PERCENT = 5;
+    const gstAmount = (orderData.subtotal * GST_PERCENT) / 100;
 
-👤 Name: ${orderData.name}
-📞 Phone: ${orderData.phone}
-📍 Address: ${orderData.address}, ${orderData.city} - ${orderData.pincode}
+    let message = "";
 
-📅 Delivery Date: ${orderData.deliveryDate}
-🍱 Meal Type: ${orderData.mealType}
-⏰ Time Slot: ${orderData.timeSlot}
+    // 🔴 HEADER
+    message += `*MR. MUTTON*\n`;
+    message += `Premium Non-Veg Delights\n\n`;
 
-💳 Payment: ${orderData.paymentMethod}
-💰 Total: ₹${orderData.totalAmount}
+    // 🔴 ORDER SUMMARY
+    message += `*ORDER SUMMARY*\n`;
+    message += `─────────────────\n`;
 
-📦 Items:
-${orderData.items
-  .map(
-    (item: any) =>
-      `• ${item.name} x ${item.quantity} = ₹${item.price * item.quantity}`,
-  )
-  .join("\n")}
-`;
+    orderData.items.forEach((item: any) => {
+      message += `\n*${item.name}*\n`;
+      message += `${item.quantity} × ₹${item.price} = ₹${item.quantity * item.price}\n`;
+    });
 
-    const url = `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+    message += `\n─────────────────\n`;
 
-    window.location.href = url;
+    // 🔴 BILL DETAILS
+    message += `Items: ${orderData.items.length}\n`;
+
+    message += `\nSubtotal: ₹${orderData.subtotal}\n`;
+    message += `Delivery Charge: ₹${orderData.deliveryCharge}\n`;
+    message += `GST (5%): ₹${gstAmount.toFixed(2)}\n`;
+
+    message += `\n*TOTAL: ₹${orderData.totalAmount}*\n`;
+
+    // 🔴 PAYMENT
+    message += `\n💳 Payment: ${orderData.paymentMethod}\n`;
+
+    // 🔴 DELIVERY DETAILS
+    message += `\n─────────────────\n`;
+    message += `\n*DELIVERY DETAILS*\n`;
+
+    message += `👤 ${orderData.name}\n`;
+    message += `📞 ${orderData.phone}\n`;
+    message += `📍 ${orderData.address}, ${orderData.city} - ${orderData.pincode}\n`;
+
+    message += `\n📅 ${orderData.deliveryDate}\n`;
+    message += `🍱 ${orderData.mealType}\n`;
+    message += `⏰ ${orderData.timeSlot}\n`;
+
+    // 🔴 GOOGLE MAP LOCATION LINK
+    if (orderData.latitude && orderData.longitude) {
+      message += `\n📌 Location: https://maps.google.com/?q=${orderData.latitude},${orderData.longitude}`;
+    }
+
+    message += `\n\nPlease confirm my order.`;
+
+    // 🔴 SEND TO WHATSAPP
+    const encodedMessage = encodeURIComponent(message);
+    window.location.href = `https://wa.me/${businessNumber}?text=${encodedMessage}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -209,25 +272,61 @@ ${orderData.items
     const token = localStorage.getItem("auth_token");
 
     if (formData.paymentMethod === "Cash on Delivery") {
-      const res = await fetch("https://mrmutton.onrender.com/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      // 🔴 STEP 1: ₹100 token ke liye Razorpay order banao
+      const res = await fetch(
+        "http://localhost:8080/api/create-razorpay-order",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ totalAmount: 100 }), // 👈 TOKEN AMOUNT
         },
-        body: JSON.stringify(orderData),
-      });
+      );
 
-      const data = await res.json();
-      console.log("COD Response:", data);
+      const razorpayOrder = await res.json();
 
-      if (res.ok) {
-        clearCart();
-         sendOrderToWhatsApp(orderData);
-        navigate("/orders");
-      } else {
-        alert(data.message || "Order failed");
-      }
+      // 🔴 STEP 2: Razorpay open karo
+      const options = {
+        key: "rzp_test_SLZq7K2gLhLi9f",
+        amount: razorpayOrder.amount,
+        currency: "INR",
+        name: "Eatora Foods LLP",
+        order_id: razorpayOrder.id,
+
+        handler: async function (response) {
+          // 🔴 STEP 3: Payment verify + order create
+          const verifyRes = await fetch(
+            "http://localhost:8080/api/verify-payment",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                orderData,
+                paymentType: "COD_TOKEN", // 👈 important
+              }),
+            },
+          );
+
+          const data = await verifyRes.json();
+
+          if (data.success) {
+            sendOrderToWhatsApp(orderData);
+            clearCart(); // 👈 ADD THIS LINE
+            navigate("/orders");
+          }
+        },
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
     }
 
     // ✅ ONLINE PAYMENT FLOW
@@ -236,7 +335,7 @@ ${orderData.items
 
       // 1️⃣ Create Razorpay Order
       const res = await fetch(
-        "https://mrmutton.onrender.com/api/create-razorpay-order",
+        "http://localhost:8080/api/create-razorpay-order",
         {
           method: "POST",
           headers: {
@@ -283,7 +382,7 @@ ${orderData.items
           const token = localStorage.getItem("auth_token");
 
           const verifyRes = await fetch(
-            "https://mrmutton.onrender.com/api/verify-payment",
+            "http://localhost:8080/api/verify-payment",
             {
               method: "POST",
               headers: {
@@ -304,9 +403,9 @@ ${orderData.items
 
           if (data.success) {
             sendOrderToWhatsApp(orderData);
-            clearCart(); // 👈 ADD THIS LINE
-            
-            navigate("/thank-you");
+
+              clearCart();
+              navigate("/thank-you");
           }
         },
       };
@@ -393,7 +492,10 @@ ${orderData.items
                 <span className="text-muted-foreground">Subtotal</span>
                 <span className="font-semibold">₹{subtotal}</span>
               </div>
-
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">GST (5%)</span>
+                <span className="font-semibold">₹{gstAmount.toFixed(2)}</span>
+              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Delivery Charge</span>
                 <span className="font-semibold">₹{deliveryCharge}</span>
@@ -401,7 +503,7 @@ ${orderData.items
 
               <div className="flex justify-between text-base font-bold border-t pt-2 mt-2">
                 <span>Total</span>
-                <span>₹{subtotal + deliveryCharge}</span>
+                <span>₹{totalAmountWithGST}</span>
               </div>
               {totalSavings > 0 && (
                 <div className="flex justify-between text-sm text-success">
@@ -552,7 +654,7 @@ ${orderData.items
             {[
               {
                 value: "Cash on Delivery",
-                label: "Cash on Delivery",
+                label: "Cash on Delivery (₹100 token required)",
                 icon: "💵",
               },
               { value: "Online Payment", label: "Online Payment", icon: "📱" },
@@ -602,7 +704,7 @@ ${orderData.items
           <div>
             <p className="text-xs text-muted-foreground">Total Amount</p>
             <p className="text-xl font-bold text-foreground">
-              ₹{subtotal + deliveryCharge}
+              ₹{totalAmountWithGST.toFixed(2)}
             </p>
           </div>
           <Button
@@ -610,7 +712,9 @@ ${orderData.items
             onClick={handleSubmit}
             className="bg-success text-success-foreground hover:bg-primary/90  px-8 h-12 text-base font-bold rounded-xl shadow-lg"
           >
-            Place Order
+            {formData.paymentMethod === "Cash on Delivery"
+              ? "Pay ₹100 Token"
+              : "Place Order"}
           </Button>
         </div>
       </div>
